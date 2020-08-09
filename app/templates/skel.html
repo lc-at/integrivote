@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    {% block head_scripts %}
+    {% endblock %}
+    <title>Integrivote</title>
+</head>
+
+<body>
+    <header>
+        <h1><a class="calm-hyperlink" href="{{ url_for('root') }}">Integrivote</a></h1>
+        <p>{{ config['ELECTION_EVENT_NAME'] }}</p>
+    </header>
+    <main>
+        {% for message in get_flashed_messages(True) %}
+        <p class="message-box{% if message[0] == 'success' %}-success{% endif %}">
+            <strong>{{ message[1] }}</strong>
+        </p>
+        {% endfor %}
+
+        {% if session['verified'] and not request.endpoint.startswith("admin.") %}
+        <div class="identity-box">
+            <p>Anda telah masuk dan terverifikasi secara otomatis sebagai:<br>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>nama:</td>
+                        <td>{{ session['name'].title() }};</td>
+                    </tr>
+                    <tr>
+                        <td>tempat lahir:</td>
+                        <td>{{ session['pob'].title() }};</td>
+                    </tr>
+                    <tr>
+                        <td>tanggal lahir:</td>
+                        <td>{{ session['dob'].title() }};</td>
+                    </tr>
+                    <tr>
+                        <td>jenis kelamin:</td>
+                        <td>{{ session['gender'].lower() }};</td>
+                    </tr>
+                    <tr>
+                        <td>status:</td>
+                        <td>{{ session['status'].lower() }};</td>
+                    </tr>
+                    <tr>
+                        <td>kelas:</td>
+                        <td>{{ config['CLASSES'][session['class']].upper() }}.</td>
+                    </tr>
+                </tbody>
+            </table>
+            </p>
+            <small>
+                <strong>Perlu diingat!</strong>
+                Data di atas didapat secara otomatis melalui NISN Anda.
+                Jika data yang tertera salah, harap segera laporkan kepada panitia pelaksana pemilihan.
+                Data tersebut termasuk suara Anda akan melalui proses verifikasi manual untuk dapat
+                dinyatakan valid.
+            </small>
+        </div>
+        {% elif request.endpoint.startswith("admin.") and request.endpoint != 'admin.login' %}
+        <p>
+            Anda masuk sebagai pengelola.
+            <a href="{{ url_for('admin.logout') }}">Keluar</a>.
+        </p>
+        {% endif %}
+
+        {% block main %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; {{ config['ELECTION_EVENT_HOST'] }} {{ config['COPYRIGHT_YEAR'] }}</p>
+    </footer>
+</body>
+
+
+</html>

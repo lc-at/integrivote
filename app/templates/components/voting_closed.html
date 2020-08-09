@@ -1,0 +1,11 @@
+<section>
+    <h3>Pemilihan telah Berakhir</h3>
+    <p>
+        Event '{{ config['ELECTION_EVENT_NAME'] }}' telah berakhir.
+        Data hasil pemilihan nantinya akan diverifikasi kembali secara manual.
+        Kemudian, panitia akan mengumumkan hasil pemilihan.
+    </p>
+    {% if request.endpoint != 'stats' %}
+    <a href="{{ url_for('stats') }}">Lihat data statistik</a>
+    {% endif %}
+</section>

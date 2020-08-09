@@ -1,0 +1,52 @@
+{% extends "skel.html" %}
+{% block main %}
+<article>
+    {% if not g.accepts_vote %}
+    {% include "components/voting_closed.html" %}
+    {% endif %}
+    {% if not vote and g.accepts_vote %}
+    <section>
+        <form method="POST">
+            <h3>Gunakan Hak Pilih Anda</h3>
+            <p>
+                Anda belum memilih. Silahkan tentukan pilihan Anda melalui formulir berikut.
+                Setelah memilih, Anda tidak dapat merubah pilihan Anda.
+            </p>
+            <div class="danger-zone">
+                <label>Pilihan Anda:</label>
+                <select name="choice" id="choiceDropdown" required>
+                    {% for candidate in candidates %}
+                    <option value="{{ loop.index - 1 }}">{{ candidate }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <label>
+                Konfirmasi pilihan dengan mengisi kotak di bawah dengan kalimat "Saya memilih"
+            </label>
+            <input pattern="[sS][aA][yY][aA].+[mM][eE][mM][iI][lL][iI][hH]" type="text" placeholder="Saya memilih"
+                required>
+            <button type="submit" id="btnSubmit">Kirimkan suara</button>
+        </form>
+    </section>
+    {% elif vote %}
+    <section>
+        <h3>Hak Pilih telah Digunakan</h3>
+        <p>
+            Anda telah menggunakan hak pilih Anda pada {{ vote.get_hfts() }}.
+            Jika Anda tidak merasa telah melakukannya,
+            harap segera laporkan insiden ini ke panitia pelaksana pemilihan.
+        </p>
+        {% if g.accepts_vote %}
+        <a href="{{ url_for('stats') }}">Lihat data statistik</a>
+        {% endif %}
+    </section>
+    {% endif %}
+</article>
+<script>
+    $(document).ready(function () {
+        $('#choiceDropdown').select2({
+            placeholder: "Masukkan pilihan Anda",
+        });
+    });
+</script>
+{% endblock %}

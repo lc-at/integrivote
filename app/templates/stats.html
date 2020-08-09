@@ -1,0 +1,59 @@
+{% extends "skel.html" %}
+
+{% block head_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="{{ url_for('static', filename='chartpalette.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+<article>
+    {% if not g.accepts_voting %}
+    {% include "components/voting_closed.html" %}
+    {% endif %}
+    <h3>Data statistik</h3>
+    <section>
+        <div class="votes-chart">
+            <canvas id="votesChart" width="50px" height="50px"></canvas>
+        </div>
+    </section>
+    <section>
+        <div style="text-align: center">
+            <table>
+                {% for candidate in config['CANDIDATES'] %}
+                <tr>
+                    <td>Suara {{ candidate }}</td>
+                    <td>{{ data['per_candidate_votes'][loop.index-1] }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>Total suara:</td>
+                    <td>{{ data['total_votes'] }}</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+</article>
+
+<script>
+    var sdata = JSON.parse(`{{ data | tojson }}`);
+
+    var ctx = document.getElementById('votesChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: sdata.per_candidate_votes
+            }],
+            labels: [
+                // {% for c in config['CANDIDATES'] %}
+                '{{ c }}',
+                // {% endfor %}
+            ],
+        },
+        options: {
+            responsive: true,
+        }
+    })
+    chartColors("cool");
+</script>
+{% endblock %}

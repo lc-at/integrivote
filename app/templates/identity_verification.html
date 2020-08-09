@@ -1,0 +1,62 @@
+{% extends "skel.html" %}
+{% block main %}
+<article>
+    {% if not g.accepts_voting %}
+    {% include "components/voting_closed.html" %}
+    {% else %}
+    <section>
+        <p>
+            Sebelum dapat menggunakan hak pilih maupun melihat data statistik,
+            <strong>Anda diwajibkan untuk melakukan verifikasi identitas.</strong>
+            Perlu diperhatikan bahwa satu identitas
+            hanya dapat memilih satu kali.
+        </p>
+    </section>
+    {% endif %}
+    <section>
+        <form method="POST">
+            <h3>Verifikasi Identitas</h3>
+            <p>
+                Isilah formulir berikut dengan benar.
+                Nomor Induk Siswa Nasional (NISN) terdapat pada kartu pelajar Anda.
+                NISN Anda juga dapat dicari
+                <a href="https://referensi.data.kemdikbud.go.id/nisn/">di sini</a>.
+            </p>
+            <label>Kelas:</label>
+            <select name="class" id="classDropdown" required>
+                <option></option>
+                {% for class in config['CLASSES'] %}
+                <option value="{{ loop.index - 1 }}"
+                    {{ 'selected=selected' if request.form.get('class') == (loop.index - 1)|string }}>
+                    {{ class }}
+                </option>
+                {% endfor %}
+            </select>
+            <label>NISN:</label>
+            <input pattern="^\d+$" type="text" name="nisn" value="{{ request.form.get('nisn') or '' }}"
+                placeholder="0030856xxx" required>
+            <label>Nama Ibu Kandung:</label>
+            <input type="text" name="mother_name" value="{{ request.form.get('mother_name') or '' }}"
+                placeholder="Joyce Byers" required>
+            <img src="{{ captcha_url }}" width="140" height="50">
+            <div class="text-center">
+                <small><a id="reloadCaptcha">muat ulang gambar</a></small>
+            </div>
+            <label>Masukkan teks pada gambar di atas:</label>
+            <input type="text" name="captcha" minlength="6" maxlength="6" required>
+            <input type="hidden" name="token_id" value="{{ token_id }}">
+            <button type="submit" id="btnSubmit">Kirim</button>
+        </form>
+    </section>
+</article>
+<script>
+    $(document).ready(function () {
+        $('#classDropdown').select2({
+            placeholder: "Pilih kelas Anda",
+        });
+    });
+    $('#reloadCaptcha').click(function () {
+        window.location.reload();
+    });
+</script>
+{% endblock %}

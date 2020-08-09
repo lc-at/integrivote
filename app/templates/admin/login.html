@@ -1,0 +1,19 @@
+{% extends "skel.html" %}
+{% block main %}
+<article>
+    <section>
+        <h3>Masuk</h3>
+        <p>
+            Halaman dengan akses terbatas.
+            Masukkan password untuk melanjutkan.
+        </p>
+    </section>
+    <section>
+        <form method="post">
+            <label>Password:</label>
+            <input type="password" name="password" placeholder="Masukkan password" required>
+            <button type="submit">Masuk</button>
+        </form>
+    </section>
+</article>
+{% endblock %}

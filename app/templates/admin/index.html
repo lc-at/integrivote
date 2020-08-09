@@ -1,0 +1,70 @@
+{% extends "skel.html" %}
+{% block main %}
+<article>
+    <section>
+        <h3>Pengaturan Pemilihan</h3>
+        <p>
+            Berikut tombol untuk membuka atau menutup pemilihan.
+            Data akan berhenti masuk ketika pemilihan ditutup.
+        </p>
+        <button id="btnToggleVoting" type="button">
+            {{ 'Tutup' if g.accepts_vote else 'Buka' }}
+        </button>
+    </section>
+    <section>
+        <h3>Data Pemilihan</h3>
+        <p>
+            Ekspor data akan mengekspor data dalam bentuk csv yang dapat dibuka
+            oleh aplikasi spreadsheet untuk kemudian dijadikan bahan verifikasi manual.
+            Hapus data pemilih tertentu digunakan untuk menghapuskan suara suatu pemilih.
+            Lakukan penghapusan tertentu tersebut hanya jika ada alasan yang pasti (contoh: kecurangan).
+            Hapus data (tombol terakhir) akan menghapus seluruh data. Harap berhati-hati.
+        </p>
+        <p>Data masuk: {{ total_data }}</p>
+        <button id="btnExport" type="button">Ekspor data (csv)</button>
+        <button id="btnDeleteVote" type="button">Hapus data pemilih tertentu</button>
+        <button id="btnDeleteAll" type="button" class="danger-button">Hapus data</button>
+    </section>
+    <section>
+        <h3>Ganti Password</h3>
+        <p>Isi formulir berikut untuk mengganti password halaman pengelola.</p>
+        <form method="post" action="{{ url_for('admin.change_password') }}">
+            <label>Password lama:</label>
+            <input type="password" name="old_password">
+            <label>Password baru:</label>
+            <input type="password" name="new_password">
+            <label>Konfirmasi password baru:</label>
+            <input type="password" name="new_password2">
+            <button type="submit">Ganti</button>
+        </form>
+    </section>
+</article>
+<script>
+    function ask_confirmation(func) {
+        var inp = prompt("Untuk melanjutkan, ketik 'saya yakin'.");
+        if (inp.match(/saya yakin/i)) {
+            return true;
+        } else {
+            alert('Gagal!');
+            return false;
+        }
+    }
+    $('#btnToggleVoting').click(() => {
+        if (!ask_confirmation()) return;
+        window.location.replace("{{ url_for('admin.toggle_voting') }}");
+    });
+    $('#btnExport').click(() => {
+        if (!ask_confirmation()) return;
+        window.location.replace("{{ url_for('admin.export') }}");
+    });
+    $('#btnDeleteVote').click(() => {
+        if (!ask_confirmation()) return;
+        var nisn = prompt("Masukkan NISN.");
+        window.location.replace("{{ url_for('admin.delete_vote') }}?nisn=" + escape(nisn));
+    });
+    $('#btnDeleteAll').click(() => {
+        if (!(ask_confirmation() && ask_confirmation() && ask_confirmation())) return;
+        window.location.replace("{{ url_for('admin.delete_all') }}");
+    });
+</script>
+{% endblock %}

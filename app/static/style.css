@@ -1,0 +1,43 @@
+.message-box {
+    border-left: 5px solid red;
+    padding: 1vw;
+
+}
+
+.message-box-success {
+    border-left: 5px solid green;
+    padding: 1vw;
+}
+
+.calm-hyperlink, .calm-hyperlink:visited {
+    color: black;
+    text-decoration: none;
+}
+
+.identity-box {
+    border: 1px dashed grey;
+    padding: 1vw;
+    text-align: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.danger-zone {
+    background-color: #ffb2b2;
+    padding: 1vw;
+}
+
+.danger-button {
+    background-color: #ffb2b2;
+}
+
+.votes-chart {
+    width: 70%;
+    margin: 0 auto;
+}
+
+select {
+    max-width: 100%;
+}
