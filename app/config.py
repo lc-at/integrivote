@@ -27,6 +27,7 @@ CLASSES = [
     'XI MIA 3',
     'XI MIA 4',
     'XI MIA 5',
+    'XI MIA 6',
     'XI IIS 1',
     'XI IIS 2',
     'XI IIS 3',
