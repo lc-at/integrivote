@@ -6,7 +6,6 @@ migrations
 .vscode/*
 *.db
 culpine.db
-app/config.py
 venv
 venv/*
 test_s3.py
