@@ -7,7 +7,7 @@
 
 {% block main %}
 <article>
-    {% if not g.accepts_voting %}
+    {% if not g.accepts_vote %}
     {% include "components/voting_closed.html" %}
     {% endif %}
     <h3>Data statistik</h3>
