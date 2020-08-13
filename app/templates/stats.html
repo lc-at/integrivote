@@ -10,26 +10,42 @@
     {% if not g.accepts_vote %}
     {% include "components/voting_closed.html" %}
     {% endif %}
-    <h3>Data statistik</h3>
+    <h3>Data Statistik</h3>
     <section>
+        {% if data['verified']['total_votes'] > 0 %}
         <div class="votes-chart">
             <canvas id="votesChart" width="50px" height="50px"></canvas>
         </div>
+        {% else %}
+        <p>Belum ada data terverifikasi untuk ditampilkan.</p>
+        {% endif %}
     </section>
     <section>
         <div style="text-align: center">
             <table>
+                <tr>
+                    <th>Kandidat</th>
+                    <th>ST</th>
+                    <th>STT</th>
+                    <th>T</th>
+                </tr>
                 {% for candidate in config['CANDIDATES'] %}
                 <tr>
                     <td>Suara {{ candidate }}</td>
-                    <td>{{ data['per_candidate_votes'][loop.index-1] }}</td>
+                    <td>{{ data['verified']['per_candidate_votes'][loop.index-1] }}</td>
+                    <td>{{ data['unverified']['per_candidate_votes'][loop.index-1] }}</td>
+                    <td>{{ data['unverified']['per_candidate_votes'][loop.index-1] +  data['verified']['per_candidate_votes'][loop.index-1] }}
+                    </td>
                 </tr>
                 {% endfor %}
                 <tr>
-                    <td>Total suara:</td>
-                    <td>{{ data['total_votes'] }}</td>
+                    <td>Jumlah suara</td>
+                    <td>{{ data['verified']['total_votes'] }}</td>
+                    <td>{{ data['unverified']['total_votes'] }}</td>
+                    <td>{{ data['unverified']['total_votes'] + data['unverified']['total_votes'] }}</td>
                 </tr>
             </table>
+            <p><small>ST: suara terverifikasi; STT: suara tidak terverifikasi; T: total.</small></p>
         </div>
     </section>
 </article>
@@ -42,7 +58,7 @@
         type: 'doughnut',
         data: {
             datasets: [{
-                data: sdata.per_candidate_votes
+                data: sdata.verified.per_candidate_votes
             }],
             labels: [
                 // {% for c in config['CANDIDATES'] %}
@@ -52,6 +68,10 @@
         },
         options: {
             responsive: true,
+            title: {
+                display: true,
+                text: 'Data Statistik Pemilih Terverifikasi'
+            }
         }
     })
     chartColors("cool");

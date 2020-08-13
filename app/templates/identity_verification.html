@@ -14,7 +14,7 @@
     </section>
     {% endif %}
     <section>
-        <form method="POST">
+        <form method="POST" id="verifyForm">
             <h3>Verifikasi Identitas</h3>
             <p>
                 Isilah formulir berikut dengan benar.
@@ -32,20 +32,30 @@
                 </option>
                 {% endfor %}
             </select>
+            <label id="nameInpLabel" style="display: none;">Nama:</label>
+            <input id="nameInp" style="display: none;" type="text" minlength="4" name="name"
+                value="{{ request.form.get('name') or '' }}" placeholder="Will Byers">
             <label>NISN:</label>
-            <input pattern="^\d+$" type="text" name="nisn" value="{{ request.form.get('nisn') or '' }}"
+            <input id="inpNisn" pattern="^\d+$" type="text" name="nisn" value="{{ request.form.get('nisn') or '' }}"
                 placeholder="0030856xxx" required>
+            <small class="danger-text" style="display: none;" id="nisnMessage">
+                NISN tidak terdaftar dalam database. Mohon periksa dan coba kembali.
+                Sudah benar? Tekan tombol berikut untuk
+                <button type="button" id="btnBypass">tetap masuk</button>.
+            </small>
             <label>Nama Ibu Kandung:</label>
-            <input type="text" name="mother_name" value="{{ request.form.get('mother_name') or '' }}"
+            <input type="text" minlength="3" name="mother_name" value="{{ request.form.get('mother_name') or '' }}"
                 placeholder="Joyce Byers" required>
-            <img src="{{ captcha_url }}" width="140" height="50">
-            <div class="text-center">
-                <small><a id="reloadCaptcha">muat ulang gambar</a></small>
-            </div>
-            <label>Masukkan teks pada gambar di atas:</label>
-            <input type="text" name="captcha" minlength="6" maxlength="6" required>
-            <input type="hidden" name="token_id" value="{{ token_id }}">
-            <button type="submit" id="btnSubmit">Kirim</button>
+            <p>
+                <small class="danger-text" style="display: none;" id="unverifiedDisclaimer">
+                    Anda akan masuk dengan data yang Anda berikan sebagai
+                    pemilih yang tidak terverifikasi. Jika Anda ingin mencoba melakukan
+                    verifikasi kembali, tekan tombol berikut untuk
+                    <button type="button" id="btnReload">mengulang</button>.
+                </small>
+            </p>
+            <input type="submit" id="btnSubmit2" style="display: none;"></input>
+            <button type="button" id="btnSubmit">Kirim</button>
         </form>
     </section>
 </article>
@@ -55,8 +65,40 @@
             placeholder: "Pilih kelas Anda",
         });
     });
-    $('#reloadCaptcha').click(function () {
-        window.location.reload();
+    $('input').keypress(function (event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            $('#btnSubmit').click();
+        }
     });
+    $('#btnSubmit').click(function () {
+        $.getJSON('{{ url_for("api.check_student_id") }}?id=' + escape($('#inpNisn').val()), (data) => {
+            if (!data.ok && !$('#unverifiedDisclaimer').is(':visible')) {
+                $('#nisnMessage').show();
+                $('#inpNisn').focus();
+            } else {
+                $('#btnSubmit2').click();
+            }
+        });
+    });
+    $('#btnBypass').click(function () {
+        const confirmationMessage = 'Lanjutkan hanya jika NISN Anda valid ' +
+            'namun tidak terdaftar pada sistem pemilihan. ' +
+            'Dengan melanjutkan, Anda setuju bahwa suara Anda akan diverifikasi ' +
+            'secara manual dan tidak akan dihitung jika gagal diverifikasi. ' +
+            'Untuk melanjutkan, silahkan ketik "saya yakin".';
+        if (prompt(confirmationMessage).match(/saya yakin/i)) {
+            $('#nisnMessage').hide();
+            $('#nameInpLabel').show();
+            $('#nameInp').prop('required', true);
+            $('#nameInp').show();
+            $('#nameInp').focus();
+            $('#unverifiedDisclaimer').show();
+            $('#inpNisn').prop('readonly', true);
+        }
+    });
+    $('#btnReload').click(function () {
+        window.location.reload();
+    })
 </script>
 {% endblock %}

@@ -20,7 +20,10 @@
             Lakukan penghapusan tertentu tersebut hanya jika ada alasan yang pasti (contoh: kecurangan).
             Hapus data (tombol terakhir) akan menghapus seluruh data. Harap berhati-hati.
         </p>
-        <p>Data masuk: {{ total_data }}</p>
+        <p>
+            Data masuk: {{ total_data['verified'] + total_data['unverified'] }}
+            (tidak terverifikasi: {{ total_data['unverified'] }})
+        </p>
         <button id="btnExport" type="button">Ekspor data (csv)</button>
         <button id="btnDeleteVote" type="button">Hapus data pemilih tertentu</button>
         <button id="btnDeleteAll" type="button" class="danger-button">Hapus data</button>
