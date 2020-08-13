@@ -42,22 +42,24 @@ def toggle_voting():
 def export():
     rows = Vote.query.all()
     candidates = current_app.config['CANDIDATES']
+    classes = current_app.config['CLASSES']
 
     def generate():
         yield ','.join([
-            'waktu', 'nisn', 'nama', 'tempat lahir', 'tanggal lahir',
-            'jenis kelamin', 'status', 'pilihan'
+            'waktu', 'nisn', 'nama', 'kelas', 'tempat lahir', 'tanggal lahir',
+            'jenis kelamin', 'nama ibu kandung', 'pilihan', 'terverifikasi'
         ]) + '\n'
         for row in rows:
             coldata = [
-                round(row.ts), row.id, row.name, row.pob, row.dob, row.gender,
-                row.status, candidates[row.choice]
+                round(row.ts), row.id, row.name, classes[row.class_], row.pob,
+                row.dob, row.gender, row.mother_name, candidates[row.choice],
+                int(row.verified)
             ]
             for i, value in enumerate(coldata):
                 if not isinstance(value, str):
                     coldata[i] = str(value)
                 if ',' in coldata[i]:
-                    coldata[i] = coldata[i].replace(',', '?')
+                    coldata[i] = coldata[i].replace(',', ' ')
 
             yield ','.join(coldata) + '\n'
 
@@ -110,5 +112,10 @@ def logout():
 
 @bp.route('/')
 def root():
-    data = {'total_data': Vote.query.count()}
+    data = {
+        'total_data': {
+            'verified': Vote.query.filter_by(verified=True).count(),
+            'unverified': Vote.query.filter_by(verified=False).count(),
+        }
+    }
     return render_template('admin/index.html', **data)
