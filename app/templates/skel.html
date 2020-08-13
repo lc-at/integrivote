@@ -71,7 +71,7 @@
                     </tr>
                 </tbody>
             </table>
-            <p><a class="button calm-hyperlink" href="{{ url_for('clear_session') }}">Keluar</a></p>
+            <p><small><button id="btnLogout" type="button">Keluar</button></small></p>
             <small>
                 <strong>Perlu diingat!</strong>
                 {% if not session['bypassed'] %}
@@ -98,7 +98,11 @@
     <footer>
         <p>&copy; {{ config['ELECTION_EVENT_HOST'] }} {{ config['COPYRIGHT_YEAR'] }}</p>
     </footer>
+    <script>
+        $('#btnLogout').click(function () {
+            window.location.href = '{{ url_for("clear_session") }}';
+        });
+    </script>
 </body>
-
 
 </html>
