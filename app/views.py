@@ -43,13 +43,14 @@ def verify_identity():
             if name and (Student.query.filter_by(id=nisn).first() or \
                     len(name) < 4):
                 abort(403)
-            session['nisn'] = student.id if student else nisn
-            session['name'] = student.name if student else name
+            session['nisn'] = student.id if student else nisn.strip()
+            session['name'] = student.name if student else name.strip()
             session['pob'] = student.pob if student else '-'
             session['dob'] = student.dob if student else '-'
             session['gender'] = student.gender if student else '-'
             session[
-                'mother_name'] = student.mother_name if student else mother_name
+                'mother_name'] = student.mother_name if student else mother_name.strip(
+                )
             session['class'] = class_ if student else class_
             session['verified'] = True
             session['bypassed'] = True if name else False
