@@ -134,4 +134,6 @@ def stats():
 def clear_session():
     if session.get('verified'):
         del session['verified']
+    if session.get('bypassed'):
+        del session['bypassed']
     return redirect(url_for('root'))
