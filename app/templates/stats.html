@@ -42,7 +42,7 @@
                     <td>Jumlah suara</td>
                     <td>{{ data['verified']['total_votes'] }}</td>
                     <td>{{ data['unverified']['total_votes'] }}</td>
-                    <td>{{ data['unverified']['total_votes'] + data['unverified']['total_votes'] }}</td>
+                    <td>{{ data['unverified']['total_votes'] + data['verified']['total_votes'] }}</td>
                 </tr>
             </table>
             <p><small>ST: suara terverifikasi; STT: suara tidak terverifikasi; T: total.</small></p>
