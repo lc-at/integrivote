@@ -1,8 +1,9 @@
+import csv
 import re
+import time
 from hashlib import sha512
 
 from . import app, db
-import time
 
 
 class Vote(db.Model):
@@ -13,7 +14,7 @@ class Vote(db.Model):
     pob = db.Column(db.String(100), nullable=True)
     dob = db.Column(db.String(20), nullable=True)
     gender = db.Column(db.String(20), nullable=True)
-    status = db.Column(db.String(50), nullable=True)
+    mother_name = db.Column(db.String(100), nullable=False)
     choice = db.Column(db.Integer, nullable=False)
     verified = db.Column(db.Boolean, nullable=False, default=False)
 
@@ -28,7 +29,7 @@ class Vote(db.Model):
             len(self.pob),
             len(self.dob),
             len(self.gender),
-            len(self.status),
+            len(self.mother_name) >= 3,
             self.class_ < len(app.config['CLASSES']),
             self.class_ >= 0,
             self.choice < len(app.config['CANDIDATES']),
@@ -36,9 +37,36 @@ class Vote(db.Model):
         ]
         for cond in conditions:
             if not cond:
-                breakpoint()
                 return False
         return True
+
+
+class Student(db.Model):
+    id = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    pob = db.Column(db.String(100), nullable=False)
+    dob = db.Column(db.String(20), nullable=False)
+    gender = db.Column(db.String(20), nullable=False)
+    mother_name = db.Column(db.String(100), nullable=False)
+    class_ = db.Column(db.Integer, nullable=False)
+
+    @classmethod
+    def syncronize(cls):
+        cls.query.delete()
+        with open(app.config['STUDENTS_CSV'], 'r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for i, row in enumerate(csv_reader):
+                if not i: continue
+                s = cls()
+                s.id = row['nisn'].strip()
+                s.name = row['nama'].strip().title()
+                s.pob = row['tempat_lahir'].strip().title()
+                s.dob = row['tanggal_lahir'].strip().title()
+                s.gender = row['jenis_kelamin'].strip().upper()
+                s.mother_name = row['nama_ibu_kandung'].title()
+                s.class_ = row['kelas'].split()[1]
+                db.session.add(s)
+        db.session.commit()
 
 
 class Preference(db.Model):
@@ -85,5 +113,5 @@ class Preference(db.Model):
 
 
 db.create_all()
-
+Student.syncronize()
 db = db
