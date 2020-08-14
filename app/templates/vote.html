@@ -8,11 +8,11 @@
     <section>
         <form method="POST">
             <h3>Gunakan Hak Pilih Anda</h3>
-            <img src="">
             <p>
                 Anda belum memilih. Silahkan tentukan pilihan Anda melalui formulir berikut.
                 Setelah memilih, Anda tidak dapat merubah pilihan Anda.
             </p>
+            <img src="{{ url_for('static', filename='candidates.jpg') }}">
             <div class="danger-zone">
                 <label>Pilihan Anda:</label>
                 <select name="choice" id="choiceDropdown" required>
