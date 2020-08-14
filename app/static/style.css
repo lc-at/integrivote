@@ -9,6 +9,10 @@
     padding: 1vw;
 }
 
+.mb-1 {
+    margin-bottom: 5px;
+}
+
 .select2-container {
     min-width: 100%;
 }
