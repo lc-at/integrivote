@@ -14,8 +14,9 @@
     <section>
         <h3>Data Pemilihan</h3>
         <p>
-            Ekspor data akan mengekspor data dalam bentuk csv yang dapat dibuka
-            oleh aplikasi spreadsheet untuk kemudian dijadikan bahan verifikasi manual.
+            Verifikasi manual digunakan untuk mengesahkan suara pemilih yang belum terverifikasi.
+            Ekspor data pemilih akan mengekspor data daftar pemilih dalam format csv
+            yang dapat dibuka dengan aplikasi spreadsheet.
             Hapus data pemilih tertentu digunakan untuk menghapuskan suara suatu pemilih.
             Lakukan penghapusan tertentu tersebut hanya jika ada alasan yang pasti (contoh: kecurangan).
             Hapus data (tombol terakhir) akan menghapus seluruh data. Harap berhati-hati.
@@ -24,9 +25,12 @@
             Data masuk: {{ total_data['verified'] + total_data['unverified'] }}
             (tidak terverifikasi: {{ total_data['unverified'] }})
         </p>
-        <button id="btnExport" type="button">Ekspor data (csv)</button>
-        <button id="btnDeleteVote" type="button">Hapus data pemilih tertentu</button>
-        <button id="btnDeleteAll" type="button" class="danger-button">Hapus data</button>
+        <div class="text-center">
+            <button class="mb-1" id="btnManualVerification" type="button">Verifikasi manual</button>
+            <button class="mb-1" id="btnExport" type="button">Ekspor data pemilih (csv)</button>
+            <button class="mb-1" id="btnDeleteVote" type="button">Hapus data pemilih tertentu</button>
+            <button class="mb-1" id="btnDeleteAll" type="button" class="danger-button">Hapus data</button>
+        </div>
     </section>
     <section>
         <h3>Ganti Password</h3>
@@ -43,7 +47,7 @@
     </section>
 </article>
 <script>
-    function ask_confirmation(func) {
+    function ask_confirmation() {
         var inp = prompt("Untuk melanjutkan, ketik 'saya yakin'.");
         if (inp.match(/saya yakin/i)) {
             return true;
@@ -52,6 +56,9 @@
             return false;
         }
     }
+    $('#btnManualVerification').click(() => {
+        window.location.href = "{{ url_for('admin.manual_verification') }}";
+    });
     $('#btnToggleVoting').click(() => {
         if (!ask_confirmation()) return;
         window.location.replace("{{ url_for('admin.toggle_voting') }}");

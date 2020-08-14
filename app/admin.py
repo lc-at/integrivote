@@ -1,4 +1,5 @@
 from hashlib import md5
+import re
 
 from flask import (Blueprint, Response, abort, current_app, flash, redirect,
                    render_template, request, session, url_for)
@@ -31,6 +32,40 @@ def login():
     return render_template('admin/login.html')
 
 
+@bp.route('/')
+def root():
+    data = {
+        'total_data': {
+            'verified': Vote.query.filter_by(verified=True).count(),
+            'unverified': Vote.query.filter_by(verified=False).count(),
+        }
+    }
+    return render_template('admin/index.html', **data)
+
+
+@bp.route('/manual-verification')
+def manual_verification():
+    accepted_id = request.args.get('accepted_id')
+    rejected_id = request.args.get('rejected_id')
+    if rejected_id:
+        vote = Vote.query.filter_by(id=rejected_id,
+                                    verified=False).first_or_404()
+        db.session.delete(vote)
+        db.session.commit()
+        flash('Sukses menghapus suara dengan NISN: %s' % rejected_id)
+        return redirect(url_for(request.endpoint))
+    elif accepted_id:
+        vote = Vote.query.filter_by(id=accepted_id,
+                                    verified=False).first_or_404()
+        vote.verified = True
+        db.session.commit()
+        flash('Sukses mengesahkan suara dengan NISN: %s' % accepted_id)
+        return redirect(url_for(request.endpoint))
+
+    votes = Vote.query.filter_by(verified=False).all()
+    return render_template('admin/manual_verification.html', votes=votes)
+
+
 @bp.route('/toggle-voting')
 def toggle_voting():
     p = Preference.get('ACCEPTS_VOTE')
@@ -41,18 +76,17 @@ def toggle_voting():
 @bp.route('/export-csv')
 def export():
     rows = Vote.query.all()
-    candidates = current_app.config['CANDIDATES']
     classes = current_app.config['CLASSES']
 
     def generate():
         yield ','.join([
             'waktu', 'nisn', 'nama', 'kelas', 'tempat lahir', 'tanggal lahir',
-            'jenis kelamin', 'nama ibu kandung', 'pilihan', 'terverifikasi'
+            'jenis kelamin', 'nama ibu kandung', 'terverifikasi'
         ]) + '\n'
         for row in rows:
             coldata = [
                 round(row.ts), row.id, row.name, classes[row.class_], row.pob,
-                row.dob, row.gender, row.mother_name, candidates[row.choice],
+                row.dob, row.gender, row.mother_name,
                 int(row.verified)
             ]
             for i, value in enumerate(coldata):
@@ -108,14 +142,3 @@ def change_password():
 def logout():
     del session['admin']
     return redirect(url_for('admin.root'))
-
-
-@bp.route('/')
-def root():
-    data = {
-        'total_data': {
-            'verified': Vote.query.filter_by(verified=True).count(),
-            'unverified': Vote.query.filter_by(verified=False).count(),
-        }
-    }
-    return render_template('admin/index.html', **data)

@@ -1,0 +1,83 @@
+{% extends "skel.html" %}
+{% block head_scripts %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+{% endblock %}
+{% block main %}
+<article>
+    <section>
+        <h3>Verifikasi Manual</h3>
+        <p>
+            Lakukan verifikasi terhadap suara pemilih yang belum terverifikasi
+            melalui halaman ini.
+        </p>
+    </section>
+    <section>
+        <table id="tblUnverifiedVotes">
+            <thead>
+                <tr>
+                    <th>Waktu dan Tanggal</th>
+                    <th>NISN</th>
+                    <th>Nama</th>
+                    <th>Kelas</th>
+                    <th>Nama Ibu Kandung</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vote in votes %}
+                <tr>
+                    <td>{{ vote.get_hfts() }}</td>
+                    <td>{{ vote.id }}</td>
+                    <td>{{ vote.name }}</td>
+                    <td>{{ vote.class_ }}</td>
+                    <td>{{ vote.mother_name }}</td>
+                    <td>
+                        <button type="button" class="mb-1" onclick="acceptVote('{{ vote.id }}');">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill-rule="evenodd"
+                                    d="M21.03 5.72a.75.75 0 010 1.06l-11.5 11.5a.75.75 0 01-1.072-.012l-5.5-5.75a.75.75 0 111.084-1.036l4.97 5.195L19.97 5.72a.75.75 0 011.06 0z">
+                                </path>
+                            </svg>
+                        </button>
+                        <button class="danger-button" type="button" onclick="rejectVote('{{ vote.id }}');">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill-rule="evenodd"
+                                    d="M5.72 5.72a.75.75 0 011.06 0L12 10.94l5.22-5.22a.75.75 0 111.06 1.06L13.06 12l5.22 5.22a.75.75 0 11-1.06 1.06L12 13.06l-5.22 5.22a.75.75 0 01-1.06-1.06L10.94 12 5.72 6.78a.75.75 0 010-1.06z">
+                                </path>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</article>
+<script>
+    $(document).ready(function () {
+        $('#tblUnverifiedVotes').DataTable();
+    });
+
+    function ask_confirmation(id, action) {
+        var inp = prompt(`Akan ${action} suara dengan NISN ${id}. ` +
+            "Untuk melanjutkan, ketik 'saya yakin'.");
+        if (inp.match(/saya yakin/i)) {
+            return true;
+        } else {
+            alert('Gagal!');
+            return false;
+        }
+    }
+
+    function acceptVote(id) {
+        if (!ask_confirmation(id, 'mengesahkan')) return;
+        window.location.replace('{{ url_for(request.endpoint) }}?accepted_id=' + escape(id));
+    }
+
+    function rejectVote(id) {
+        if (!ask_confirmation(id, 'menghapus')) return;
+        window.location.replace('{{ url_for(request.endpoint) }}?rejected_id=' + escape(id));
+    }
+</script>
+{% endblock %}
