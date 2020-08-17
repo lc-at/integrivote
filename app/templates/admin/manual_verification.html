@@ -30,7 +30,7 @@
                     <td>{{ vote.get_hfts() }}</td>
                     <td>{{ vote.id }}</td>
                     <td>{{ vote.name }}</td>
-                    <td>{{ vote.class_ }}</td>
+                    <td>{{ config['CLASSES'][vote.class_] }}</td>
                     <td>{{ vote.mother_name }}</td>
                     <td>
                         <button type="button" class="mb-1" onclick="acceptVote('{{ vote.id }}');">
@@ -72,12 +72,12 @@
 
     function acceptVote(id) {
         if (!ask_confirmation(id, 'mengesahkan')) return;
-        window.location.replace('{{ url_for(request.endpoint) }}?accepted_id=' + escape(id));
+        window.location.replace('{{ url_for(request.endpoint) }}?accepted_id=' + encodeURIComponent(id));
     }
 
     function rejectVote(id) {
         if (!ask_confirmation(id, 'menghapus')) return;
-        window.location.replace('{{ url_for(request.endpoint) }}?rejected_id=' + escape(id));
+        window.location.replace('{{ url_for(request.endpoint) }}?rejected_id=' + encodeURIComponent(id));
     }
 </script>
 {% endblock %}

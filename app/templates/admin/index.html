@@ -70,7 +70,7 @@
     $('#btnDeleteVote').click(() => {
         if (!ask_confirmation()) return;
         var nisn = prompt("Masukkan NISN.");
-        window.location.replace("{{ url_for('admin.delete_vote') }}?nisn=" + escape(nisn));
+        window.location.replace("{{ url_for('admin.delete_vote') }}?nisn=" + encodeURIComponent(nisn));
     });
     $('#btnDeleteAll').click(() => {
         if (!(ask_confirmation() && ask_confirmation() && ask_confirmation())) return;

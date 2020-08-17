@@ -20,7 +20,7 @@
                 Isilah formulir berikut dengan benar.
                 Nomor Induk Siswa Nasional (NISN) terdapat pada kartu pelajar Anda.
                 NISN Anda juga dapat dicari
-                <a href="https://referensi.data.kemdikbud.go.id/nisn/">di sini</a>.
+                <a href="https://referensi.data.kemdikbud.go.id/nisn/index.php/Cindex/formcaribynama">di sini</a>.
             </p>
             <label>Kelas:</label>
             <select name="class" id="classDropdown" required>
@@ -35,9 +35,9 @@
             <label id="nameInpLabel" style="display: none;">Nama:</label>
             <input id="nameInp" style="display: none;" type="text" minlength="4" name="name"
                 value="{{ request.form.get('name') or '' }}" placeholder="Will Byers">
-            <label>NISN:</label>
-            <input id="inpNisn" pattern="^\d+$" type="text" name="nisn" value="{{ request.form.get('nisn') or '' }}"
-                placeholder="0030856xxx" required>
+            <label>NISN (hanya angka):</label>
+            <input id="inpNisn" pattern="^\d+$" type="tel" inputmode="numeric" name="nisn"
+                value="{{ request.form.get('nisn') or '' }}" placeholder="0030856xxx" required>
             <small class="danger-text" style="display: none;" id="nisnMessage">
                 NISN tidak terdaftar dalam database. Mohon periksa dan coba kembali.
                 Sudah benar? Tekan tombol berikut untuk
@@ -72,7 +72,7 @@
         }
     });
     $('#btnSubmit').click(function () {
-        $.getJSON('{{ url_for("api.check_student_id") }}?id=' + escape($('#inpNisn').val()), (data) => {
+        $.getJSON('{{ url_for("api.check_student_id") }}?id=' + encodeURIComponent($('#inpNisn').val()), (data) => {
             if (!data.ok && !$('#unverifiedDisclaimer').is(':visible')) {
                 $('#nisnMessage').show();
                 $('#inpNisn').focus();
