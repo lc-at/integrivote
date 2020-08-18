@@ -56,7 +56,6 @@ class Student(db.Model):
         with open(app.config['STUDENTS_CSV'], 'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for i, row in enumerate(csv_reader):
-                if not i: continue
                 s = cls()
                 s.id = row['nisn'].strip()
                 s.name = row['nama'].strip().title()
