@@ -9,6 +9,8 @@ ELECTION_EVENT_NAME = ' '.join(('Pemilihan Ketua dan Wakil Ketua OSIS',
 ELECTION_EVENT_HOST = 'OSIS SMA Negeri 1 Sumbawa Besar'
 COPYRIGHT_YEAR = 2020
 
+MAX_VOTES = 898
+
 STUDENTS_CSV = 'data_siswa.csv'
 
 CANDIDATES = [
