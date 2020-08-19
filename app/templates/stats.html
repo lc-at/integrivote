@@ -4,7 +4,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script src="{{ url_for('static', filename='chartpalette.js') }}"></script>
 {% endblock %}
-
+{% set not_voted = config['MAX_VOTES'] - data['verified']['total_votes'] %}
 {% block main %}
 <article>
     {% if not g.accepts_vote %}
@@ -46,7 +46,7 @@
                 </tr>
                 <tr>
                     <td>Belum memilih</td>
-                    <td colspan="3">{{ config['MAX_VOTES'] - data['verified']['total_votes'] }}</td>
+                    <td colspan="3">{{ not_voted }}</td>
                 </tr>
             </table>
             <p><small>ST: suara terverifikasi; STT: suara tidak terverifikasi; T: total.</small></p>
@@ -62,12 +62,13 @@
         type: 'doughnut',
         data: {
             datasets: [{
-                data: sdata.verified.per_candidate_votes
+                data: sdata.verified.per_candidate_votes.concat(parseInt('{{ not_voted }}')),
             }],
             labels: [
                 // {% for c in config['CANDIDATES'] %}
                 '{{ c }}',
                 // {% endfor %}
+                'Belum memilih',
             ],
         },
         options: {
